@@ -24,10 +24,14 @@ public class HotelServiceImp implements HotelService {
     @Override
     public HotelDto createNewHotel(HotelDto hotelDto){
         log.info("Creating a new hotel with name: {}", hotelDto.getName());
+//        convert DTO->Entity
         Hotel hotel = modelMapper.map(hotelDto, Hotel.class);
+//        set default values
         hotel.setActive(false);
+//        save into the DB
         hotel = hotelRepository.save(hotel);
         log.info("Created a new hotel with id: {}", hotelDto.getId());
+//        Convert Entity → DTO and return it:
         return modelMapper.map(hotel, HotelDto.class);
     }
 
@@ -38,5 +42,26 @@ public class HotelServiceImp implements HotelService {
                 .findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Hotel not found with ID:"+id));
         return modelMapper.map(hotel, HotelDto.class);
+    }
+
+    @Override
+    public HotelDto updateHotelById(Long id, HotelDto hotelDto){
+        log.info("Updating the hotel with ID: {}", id);
+        Hotel hotel = hotelRepository
+                .findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Hotel not found with ID:"+id));
+        modelMapper.map(hotelDto, hotel);
+        hotel.setId(id);
+//        modelMapper.map(source, destination)
+//        all the things are tansfered from source to destination
+        hotel = hotelRepository.save(hotel);
+        return modelMapper.map(hotel, HotelDto.class);
+    }
+    public void deleteHotelById(Long id){
+        boolean exists = hotelRepository.existsById(id);
+        if(!exists) throw new ResourceNotFoundException("Hotel not found with ID:"+id);
+
+        hotelRepository.deleteById(id);
+//        TODO: delete the future inventories for this hotel
     }
 }

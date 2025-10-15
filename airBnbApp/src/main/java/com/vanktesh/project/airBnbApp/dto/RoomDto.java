@@ -1,10 +1,13 @@
 package com.vanktesh.project.airBnbApp.dto;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 import java.math.BigDecimal;
 
 
 @Data
+@RequiredArgsConstructor
 public class RoomDto {
     private Long id;
     private String type;
